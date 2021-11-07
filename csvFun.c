@@ -12,7 +12,6 @@ int readCSV(){
   struct stat mystat;
   stat("./nyc_pop.txt", &mystat);
   int fh = open("./nyc_pop.txt", O_RDONLY);
-  int fhsave = open("./nyc_pop.data", O_CREAT | O_WRONLY, 0777);
 
   char * bigtext = calloc(1, mystat.st_size);
   read(fh, bigtext, mystat.st_size);
@@ -86,6 +85,8 @@ int readCSV(){
     target = strchr(cp, '\n');
   }
 
+  int fhsave = open("./nyc_pop.data", O_CREAT | O_TRUNC | O_WRONLY, 0777);
+
   write(fhsave,data, sizeof(data));
   printf("wrote %d bytes to nyc_pop.data\n", sizeof(data));
   return 0;
@@ -98,6 +99,10 @@ int readData(){
     return 0;
   }
   int fh = open("./nyc_pop.data", O_RDONLY);
+  if (fh == -1){
+    printf("%s\n", strerror(errno));
+    return 0;
+  }
   struct pop_entry *data = calloc(1, mystat.st_size + sizeof(struct pop_entry));
 
   read(fh, data, mystat.st_size);
@@ -107,7 +112,89 @@ int readData(){
     printf("%d: year: %d boro: %s	pop: %d\n", counter, data[i].year, data[i].boro, data[i].population);
     counter ++;
   }
-
   // printf("%d\n", mystat.st_size);
+}
+
+int addData(){
+  printf("Enter year boro pop: ");
+  char str[100];
+  char *pointer;
+  int year;
+  char boro[15];
+  int pop;
+  if (!(fgets(str, 100 , stdin))){
+    printf("Invalid Input");
+  }
+  // printf("%s", str);
+  pointer = str;
+  sscanf(pointer, "%d %s %d\n", &year, boro, &pop);
+  // printf("year:%d, boro:%s, pop:%d\n", year, boro, pop);
+  struct pop_entry new;
+  new.year = year;
+  new.population = pop;
+  strcpy(new.boro, boro);
+// test
+  int fh = open("./nyc_pop.data", O_WRONLY|O_APPEND);
+  printf("Appended data to file: year: %d	boro: %s	pop: %d\n", new.year, new.boro,new.population);
+  int bytesWritten = write(fh,&new, sizeof(new));
+  if (bytesWritten == -1){
+      printf("%s\n", strerror(errno));
+  }else{
+    printf("Appended %d bytes\n", bytesWritten);
+  }
+
+  return 0;
+
+}
+
+int updateData(){
+  struct stat mystat;
+  if (stat("./nyc_pop.data", &mystat) == -1){
+    printf("%s\n", strerror(errno));
+    return 0;
+  }
+  int fh = open("./nyc_pop.data", O_RDWR);
+  if (fh == -1){
+    printf("%s\n", strerror(errno));
+    return 0;
+  }
+  struct pop_entry *data = calloc(1, mystat.st_size + sizeof(struct pop_entry));
+
+  read(fh, data, mystat.st_size);
+  int i = 0;
+  int counter = 0;
+  for (; i * sizeof(struct pop_entry) < mystat.st_size; i++){
+    printf("%d: year: %d boro: %s	pop: %d\n", counter, data[i].year, data[i].boro, data[i].population);
+    counter ++;
+  }
+  char *pointer;
+  char str[100];
+  int year;
+  char boro[15];
+  int pop;
+  printf("entry to update: ");
+  if (!(fgets(str, 100 , stdin))){
+    printf("Invalid Input");
+  }
+  int target = atoi(str);
+  printf("Enter year boro pop: ");
+  if (!(fgets(str, 100 , stdin))){
+    printf("Invalid Input");
+  }
+  // printf("%s", str);
+  pointer = str;
+  sscanf(pointer, "%d %s %d\n", &year, boro, &pop);
+  // printf("year:%d, boro:%s, pop:%d\n", year, boro, pop);
+  struct pop_entry new;
+  new.year = year;
+  new.population = pop;
+  strcpy(new.boro, boro);
+  lseek(fh, target * sizeof(struct pop_entry), SEEK_SET);
+  int bytesWritten = write(fh,&new, sizeof(new));
+  if (bytesWritten == -1){
+      printf("%s\n", strerror(errno));
+  }else{
+    printf("File updated.\n");
+  }
 
 }

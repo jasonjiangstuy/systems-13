@@ -25,6 +25,12 @@ int main(int argc, char const *argv[]) {
        readCSV();
      }else if(!strcmp(argv[1], "-read_data")){
        readData();
+     }else if(!strcmp(argv[1], "-add_data")){
+       addData();
+     }else if(!strcmp(argv[1], "-update_data")){
+       updateData();
+     }else{
+       printf("Unknown Arguement\n");
      }
    }
 

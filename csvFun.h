@@ -3,4 +3,6 @@
 
 int readCSV();
 int readData();
+int addData();
+int updateData();
 #endif
