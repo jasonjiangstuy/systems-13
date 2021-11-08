@@ -43,7 +43,7 @@ int readCSV(){
     }
   }
   // subtract one to account for heading line
-  struct pop_entry data[(lineNumb) *5];
+  struct pop_entry data[(lineNumb - 1) *5];
 
   int lineNumbTemp = 0;
   while (target != NULL && *target != '\0'){
@@ -75,11 +75,11 @@ int readCSV(){
       strcpy(_bx.boro , "bronx");
       strcpy(_si.boro , "staten island");
       // subtract one to account for heading line
-      data[(lineNumbTemp-1)* 5 + 0] = _m;
-      data[(lineNumbTemp-1)* 5 + 1] = _bk;
-      data[(lineNumbTemp-1)* 5 + 2] = _q;
-      data[(lineNumbTemp-1)* 5 + 3] = _bx;
-      data[(lineNumbTemp-1)* 5 + 4] = _si;
+      data[(lineNumbTemp-2)* 5 + 0] = _m;
+      data[(lineNumbTemp-2)* 5 + 1] = _bk;
+      data[(lineNumbTemp-2)* 5 + 2] = _q;
+      data[(lineNumbTemp-2)* 5 + 3] = _bx;
+      data[(lineNumbTemp-2)* 5 + 4] = _si;
     }
     cp = (target+1);
     target = strchr(cp, '\n');
