@@ -43,7 +43,7 @@ int readCSV(){
     }
   }
   // subtract one to account for heading line
-  struct pop_entry data[(lineNumb - 1) *5];
+  struct pop_entry data[(lineNumb) *5];
 
   int lineNumbTemp = 0;
   while (target != NULL && *target != '\0'){
